@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客戶留言</title>
+    <style>
+        /* 全域樣式 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 表單容器樣式 */
+        .contact-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            margin: 20px;
+        }
+
+        /* 標題樣式 */
+        .contact-title {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            border-bottom: 2px solid #4caf50;
+            padding-bottom: 10px;
+        }
+
+        /* 表單樣式 */
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 表單群組樣式 */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* 標籤樣式 */
+        label {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+
+        /* 輸入框樣式 */
+        input,
+        textarea {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        /* 輸入框焦點效果 */
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+
+        /* 文字區域樣式 */
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* 提交按鈕樣式 */
+        .submit-btn {
+            background: linear-gradient(145deg, #4caf50, #45a049);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        /* 提交按鈕懸停效果 */
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(145deg, #45a049, #4caf50);
+        }
+
+        /* 返回按鈕樣式 */
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        /* 返回按鈕懸停效果 */
+        .back-btn:hover {
+            color: #4caf50;
+        }
+
+        /* 必填欄位標記 */
+        .required {
+            color: #ff4444;
+            margin-left: 4px;
+        }
+
+        /* 輸入提示樣式 */
+        .input-hint {
+            color: #666;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* 錯誤訊息樣式 */
+        .error-message {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        /* 成功訊息樣式 */
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        /* 輸入驗證狀態樣式 */
+        input.valid,
+        textarea.valid {
+            border-color: #4caf50;
+            background-color: #f8fff8;
+        }
+
+        input.invalid,
+        textarea.invalid {
+            border-color: #ff4444;
+            background-color: #fff8f8;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 600px) {
+            .contact-container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .contact-title {
+                font-size: 20px;
+            }
+
+            input,
+            textarea {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="contact-container">
+        <h1 class="contact-title">客戶留言</h1>
+
+        <!-- 成功訊息顯示區 -->
+        <div class="success-message" id="successMessage">
+            留言已成功送出！我們會盡快與您聯繫。
+        </div>
+
+        <!-- 表單開始 -->
+        <form class="contact-form" id="contactForm" method="POST" action="./contact.php">
+            <!-- 姓名輸入區 -->
+            <div class="form-group">
+                <label for="name">姓名<span class="required">*</span></label>
+                <input type="text" id="name" name="name" required placeholder="請輸入您的姓名（2-20個字）" minlength="2"
+                    maxlength="20" oninput="validateInput(this, 'name')">
+                <div class="input-hint">請輸入2-20個字的姓名</div>
+                <div class="error-message" id="nameError">請輸入有效的姓名（至少2個字）</div>
+            </div>
+
+            <!-- 電話輸入區 -->
+            <div class="form-group">
+                <label for="phone">電話<span class="required">*</span></label>
+                <input type="tel" id="phone" name="phone" required placeholder="請輸入手機號碼（例：0912345678）"
+                    pattern="09[0-9]{8}" oninput="validateInput(this, 'phone')">
+                <div class="input-hint">請輸入10位數的手機號碼，需以09開頭</div>
+                <div class="error-message" id="phoneError">請輸入有效的手機號碼（例：0912345678）</div>
+            </div>
+
+            <!-- 事由內容區 -->
+            <div class="form-group">
+                <label for="message">事由<span class="required">*</span></label>
+                <textarea id="message" name="message" required placeholder="請輸入留言事由（10-500個字）" minlength="10"
+                    maxlength="500" oninput="validateInput(this, 'message')"></textarea>
+                <div class="input-hint">
+                    請輸入10-500個字的內容
+                    <span id="charCount">（目前：0 字）</span>
+                </div>
+                <div class="error-message" id="messageError">請輸入至少10個字的內容</div>
+            </div>
+
+            <!-- 提交按鈕 -->
+            <button type="submit" class="submit-btn">送出留言</button>
+        </form>
+
+        <!-- 返回首頁連結 -->
+        <a href="index.html" class="back-btn">返回首頁</a>
+    </div>
+
+    <!-- JavaScript 表單驗證與提交 -->
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function (e) {
+            e.preventDefault(); // 防止表單直接提交
+
+            if (validateForm()) {
+                // 使用 Fetch API 提交表單
+                fetch('./contact.php', {
+                    method: 'POST',
+                    body: new FormData(this)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('網路回應不正常');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            // 顯示成功訊息
+                            document.getElementById('successMessage').style.display = 'block';
+                            // 清空表單
+                            document.getElementById('contactForm').reset();
+                            // 重置所有輸入框的驗證狀態
+                            document.querySelectorAll('input, textarea').forEach(input => {
+                                input.classList.remove('valid', 'invalid');
+                            });
+                            // 重置字數計數
+                            document.getElementById('charCount').textContent = '（目前：0 字）';
+                            // 3秒後隱藏成功訊息
+                            setTimeout(() => {
+                                document.getElementById('successMessage').style.display = 'none';
+                            }, 3000);
+                        } else {
+                            alert(data.message || '發生錯誤，請稍後再試。');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('發生錯誤，請稍後再試。');
+                    });
+            }
+        });
+
+        function validateForm() {
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const message = document.getElementById('message').value;
+
+            let isValid = true;
+
+            // 重置錯誤訊息
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+
+            // 驗證姓名
+            if (name.trim().length < 2) {
+                document.getElementById('nameError').style.display = 'block';
+                isValid = false;
+            }
+
+            // 驗證電話號碼
+            const phoneRegex = /^09\d{8}$/;
+            if (!phoneRegex.test(phone)) {
+                document.getElementById('phoneError').style.display = 'block';
+                isValid = false;
+            }
+
+            // 驗證留言內容
+            if (message.trim().length < 10) {
+                document.getElementById('messageError').style.display = 'block';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function validateInput(element, type) {
+            const value = element.value.trim();
+            let isValid = true;
+
+            switch (type) {
+                case 'name':
+                    isValid = value.length >= 2 && value.length <= 20;
+                    break;
+
+                case 'phone':
+                    isValid = /^09\d{8}$/.test(value);
+                    break;
+
+                case 'message':
+                    isValid = value.length >= 10 && value.length <= 500;
+                    // 更新字數統計
+                    document.getElementById('charCount').textContent =
+                        `（目前：${value.length} 字）`;
+                    break;
+            }
+
+            // 更新輸入框樣式
+            if (value === '') {
+                element.classList.remove('valid', 'invalid');
+            } else {
+                element.classList.toggle('valid', isValid);
+                element.classList.toggle('invalid', !isValid);
+            }
+
+            // 顯示/隱藏錯誤訊息
+            const errorElement = document.getElementById(`${type}Error`);
+            if (errorElement) {
+                errorElement.style.display = (value !== '' && !isValid) ? 'block' : 'none';
+            }
+        }
+
+        // 頁面載入時初始化
+        document.addEventListener('DOMContentLoaded', function () {
+            // 為所有輸入欄位添加初始驗證
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                if (input.id) {
+                    validateInput(input, input.id);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
